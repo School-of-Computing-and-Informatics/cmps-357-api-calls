@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malformed Entry Example: Invalid Date and Missing Fields</title>
+    <style>
+        /* CSS Variables for theme colors - matching main app */
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #0f3460;
+            --text-primary: #eee;
+            --accent-green: #16db93;
+            --accent-orange: #f39c12;
+            --error-bg: #e74c3c;
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--error-bg);
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px var(--shadow-color);
+        }
+
+        h2 {
+            color: var(--accent-orange);
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .meta-info {
+            background-color: var(--bg-primary);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--error-bg);
+        }
+
+        .meta-info p {
+            margin: 5px 0;
+            color: var(--accent-orange);
+        }
+
+        .error-demo {
+            background-color: var(--bg-primary);
+            border: 2px solid var(--error-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .error-demo h3 {
+            color: var(--error-bg);
+            margin-top: 0;
+        }
+
+        .code-example {
+            background-color: var(--bg-primary);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border-left: 4px solid var(--accent-green);
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .content {
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .content ul {
+            padding-left: 25px;
+        }
+
+        .content li {
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background-color: var(--accent-green);
+            color: var(--bg-primary);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: var(--accent-orange);
+            transform: translateY(-2px);
+        }
+
+        .warning {
+            color: var(--error-bg);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚠️ Malformed Entry Example: Invalid Date and Missing Fields</h1>
+        
+        <div class="meta-info">
+            <p><strong>Author:</strong> Broken Parser</p>
+            <p><strong>Published:</strong> <span class="warning">Not-A-Valid-Date-Format-2025-99-99</span></p>
+            <p><strong>Categories:</strong> Error Testing</p>
+        </div>
+
+        <div class="content">
+            <h2>🚫 Purpose of This Page</h2>
+            <p>This entry demonstrates what happens when RSS entries have invalid date formats and are missing required fields. It serves as a test case for RSS parsers and API error handling.</p>
+
+            <div class="error-demo">
+                <h3>🔍 Error Scenarios Demonstrated</h3>
+                <ul>
+                    <li><strong>Invalid Date Format:</strong> "Not-A-Valid-Date-Format-2025-99-99"</li>
+                    <li><strong>Missing Required Fields:</strong> Incomplete source tags</li>
+                    <li><strong>Malformed XML Structure:</strong> Intentionally broken elements</li>
+                </ul>
+            </div>
+
+            <h2>📝 RSS Source Code Example</h2>
+            <p>The RSS entry for this page contains intentionally malformed data:</p>
+            
+            <div class="code-example">
+&lt;item&gt;
+  &lt;title&gt;Malformed Entry Example: Invalid Date and Missing Fields&lt;/title&gt;
+  &lt;description&gt;This entry demonstrates what happens when RSS entries have invalid date formats...&lt;/description&gt;
+  &lt;pubDate&gt;Not-A-Valid-Date-Format-2025-99-99&lt;/pubDate&gt;
+  &lt;!-- Missing closing source tag intentionally --&gt;
+  &lt;source url="..."&gt;Demo RSS Feed
+&lt;/item&gt;
+            </div>
+
+            <h2>🎯 Educational Value</h2>
+            <p>This page exists to help students understand:</p>
+            <ul>
+                <li>How to handle malformed data gracefully</li>
+                <li>The importance of data validation</li>
+                <li>Error handling strategies in API development</li>
+                <li>Why robust parsing is essential for real-world applications</li>
+            </ul>
+
+            <p class="warning">⚠️ This is a demonstration page showing intentionally broken data for educational purposes in CMPS 357.</p>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to API Demo</a>
+    </div>
+</body>
+</html>
