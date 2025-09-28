@@ -1,6 +1,6 @@
 # 🌐 API Calls Demo - RSS to JSON
 
-A modern, projector-friendly web application for demonstrating API calls to RSS-to-JSON services. Perfect for classroom presentations and API learning sessions.
+A modern, projector-friendly web application for demonstrating API calls to RSS-to-JSON services. Perfect for classroom presentations and API learning sessions. A live version of the main branch can be found [here](https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/). Please note: there will be a short wait after any commits before changes are reflected.
 
 ## ✨ Features
 
