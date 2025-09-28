@@ -77,7 +77,7 @@ Designed specifically for projector presentations:
 The application includes these pre-configured feeds:
 
 - **📰 BBC News**: `https://feeds.bbci.co.uk/news/rss.xml`
-- **📺 CNN News**: `https://rss.cnn.com/rss/edition.rss`
+- **📰 NY Times US News**: `https://rss.nytimes.com/services/xml/rss/nyt/US.xml`
 - **💻 TechCrunch**: `https://techcrunch.com/feed/`
 
 ## 🏗️ Project Structure

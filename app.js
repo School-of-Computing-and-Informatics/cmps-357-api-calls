@@ -270,7 +270,7 @@ function normalizeApiResponse(data) {
  */
 function getMockRSSData(rssUrl) {
     const feedName = rssUrl.includes('bbc') ? 'BBC News' :
-                     rssUrl.includes('cnn') ? 'CNN News' :
+                     rssUrl.includes('nytimes') ? 'NY Times US News' :
                      rssUrl.includes('techcrunch') ? 'TechCrunch' :
                      'Sample RSS Feed';
     
