@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS to JSON Conversion: Best Practices and Implementation</title>
+    <style>
+        /* CSS Variables for theme colors - matching main app */
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #0f3460;
+            --text-primary: #eee;
+            --accent-green: #16db93;
+            --accent-orange: #f39c12;
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--accent-green);
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px var(--shadow-color);
+        }
+
+        h2 {
+            color: var(--accent-orange);
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: var(--accent-green);
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .meta-info {
+            background-color: var(--bg-primary);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .meta-info p {
+            margin: 5px 0;
+            color: var(--accent-orange);
+        }
+
+        .content {
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .content ul {
+            padding-left: 25px;
+        }
+
+        .content li {
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background-color: var(--accent-green);
+            color: var(--bg-primary);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: var(--accent-orange);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RSS to JSON Conversion: Best Practices and Implementation</h1>
+        
+        <div class="meta-info">
+            <p><strong>Author:</strong> Jane Smith</p>
+            <p><strong>Published:</strong> Monday, January 6, 2025 at 2:30 PM GMT</p>
+            <p><strong>Categories:</strong> Data Processing, JSON, RSS</p>
+        </div>
+
+        <div class="content">
+            <h2>🔍 Overview</h2>
+            <p>Explore the technical aspects of RSS to JSON conversion, including data normalization, field mapping, and handling different RSS formats for consistent JSON output.</p>
+
+            <h2>🛠️ Technical Deep Dive</h2>
+            <p>Converting RSS feeds to JSON format requires careful handling of various RSS specifications and edge cases. This comprehensive guide covers:</p>
+
+            <h3>Key Conversion Challenges</h3>
+            <ul>
+                <li>Handling different RSS versions (0.91, 2.0, Atom)</li>
+                <li>Normalizing field names across formats</li>
+                <li>Managing HTML content in descriptions</li>
+                <li>Date format standardization</li>
+            </ul>
+
+            <h2>🎯 Implementation Strategy</h2>
+            <p>Implementing robust conversion logic ensures consistent API responses regardless of the source feed format. This is particularly important when building educational tools that need to work reliably in classroom environments.</p>
+
+            <p>The techniques demonstrated in this article are directly applicable to the CMPS 357 API demonstration tool, where multiple RSS sources need to be processed consistently.</p>
+        </div>
+
+        <a href="../" class="back-link">← Back to API Demo</a>
+    </div>
+</body>
+</html>
