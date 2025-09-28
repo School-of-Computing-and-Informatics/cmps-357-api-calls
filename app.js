@@ -393,6 +393,7 @@ function getMockRSSData(rssUrl) {
     const feedName = rssUrl.includes('bbc') ? 'BBC News' :
                      rssUrl.includes('nytimes') ? 'NY Times US News' :
                      rssUrl.includes('techcrunch') ? 'TechCrunch' :
+                     rssUrl.includes('demo.rss') ? 'Demo RSS Feed - API Testing Examples' :
                      'Sample RSS Feed';
     
     return {
