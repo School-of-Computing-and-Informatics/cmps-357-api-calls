@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Calls Demo - RSS to JSON</title>
+    <style>
+        /* Projector-friendly styling */
+        body {
+            background-color: #1a1a2e;
+            color: #eee;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #16db93;
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            color: #f39c12;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .input-section {
+            background-color: #0f3460;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid #16db93;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #16db93;
+            font-size: 20px;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #16db93;
+            border-radius: 5px;
+            background-color: #1a1a2e;
+            color: #eee;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #f39c12;
+            background-color: #0f3460;
+        }
+
+        button {
+            background-color: #16db93;
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #f39c12;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            color: #f39c12;
+            font-style: italic;
+            font-size: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .error {
+            background-color: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 18px;
+            border: 2px solid #c0392b;
+        }
+
+        .result-section {
+            background-color: #0f3460;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 25px;
+            border: 2px solid #f39c12;
+        }
+
+        .json-display {
+            background-color: #1a1a2e;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #666;
+            color: #eee;
+        }
+
+        .feed-info {
+            background-color: #16db93;
+            color: #1a1a2e;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .feed-items {
+            margin-top: 20px;
+        }
+
+        .feed-item {
+            background-color: #1a1a2e;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #16db93;
+        }
+
+        .item-title {
+            color: #f39c12;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .item-date {
+            color: #16db93;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .item-description {
+            color: #eee;
+            line-height: 1.5;
+        }
+
+        .example-urls {
+            background-color: #0f3460;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #666;
+        }
+
+        .example-urls h3 {
+            color: #16db93;
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .example-url {
+            color: #f39c12;
+            cursor: pointer;
+            text-decoration: underline;
+            display: block;
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .example-url:hover {
+            color: #16db93;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 API Calls Demo: RSS to JSON</h1>
+        
+        <div class="input-section">
+            <h2>📡 RSS Feed URL</h2>
+            
+            <div class="example-urls">
+                <h3>Example RSS Feeds (click to use):</h3>
+                <span class="example-url" onclick="useExampleUrl('https://feeds.bbci.co.uk/news/rss.xml')">
+                    📰 BBC News
+                </span>
+                <span class="example-url" onclick="useExampleUrl('https://rss.cnn.com/rss/edition.rss')">
+                    📺 CNN News
+                </span>
+                <span class="example-url" onclick="useExampleUrl('https://techcrunch.com/feed/')">
+                    💻 TechCrunch
+                </span>
+            </div>
+            
+            <label for="rssUrl">Enter RSS Feed URL:</label>
+            <input type="url" 
+                   id="rssUrl" 
+                   placeholder="https://example.com/rss.xml" 
+                   value="https://feeds.bbci.co.uk/news/rss.xml">
+            
+            <button onclick="fetchRSSFeed()" id="fetchButton">
+                🔄 Fetch RSS Feed
+            </button>
+        </div>
+
+        <div id="loadingMessage" class="loading" style="display: none;">
+            ⏳ Fetching RSS feed data...
+        </div>
+
+        <div id="errorMessage" class="error" style="display: none;"></div>
+
+        <div id="resultSection" class="result-section" style="display: none;">
+            <h2>📊 API Response</h2>
+            <div id="feedInfo" class="feed-info" style="display: none;"></div>
+            <div id="feedItems" class="feed-items"></div>
+            
+            <h2>🔍 Raw JSON Data</h2>
+            <div id="jsonDisplay" class="json-display"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
