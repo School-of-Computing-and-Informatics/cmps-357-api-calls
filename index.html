@@ -5,15 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Calls Demo - RSS to JSON</title>
     <style>
-        /* Projector-friendly styling */
+        /* CSS Variables for theme colors */
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #0f3460;
+            --text-primary: #eee;
+            --text-secondary: #1a1a2e;
+            --accent-green: #16db93;
+            --accent-orange: #f39c12;
+            --border-color: #666;
+            --error-bg: #e74c3c;
+            --error-border: #c0392b;
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+
+        /* Light mode variables */
+        [data-theme="light"] {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #ffffff;
+            --accent-green: #28a745;
+            --accent-orange: #fd7e14;
+            --border-color: #dee2e6;
+            --error-bg: #dc3545;
+            --error-border: #c82333;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        /* Base styling using CSS variables */
         body {
-            background-color: #1a1a2e;
-            color: #eee;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             font-family: 'Arial', sans-serif;
             font-size: 18px;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
@@ -21,57 +50,83 @@
             margin: 0 auto;
         }
 
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-green);
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--accent-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
         h1 {
-            color: #16db93;
+            color: var(--accent-green);
             font-size: 36px;
             text-align: center;
             margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 4px var(--shadow-color);
         }
 
         h2 {
-            color: #f39c12;
+            color: var(--accent-orange);
             font-size: 24px;
             margin-top: 30px;
             margin-bottom: 15px;
         }
 
         .input-section {
-            background-color: #0f3460;
+            background-color: var(--bg-secondary);
             padding: 25px;
             border-radius: 10px;
             margin-bottom: 25px;
-            border: 2px solid #16db93;
+            border: 2px solid var(--accent-green);
+            box-shadow: 0 4px 15px var(--shadow-color);
         }
 
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
-            color: #16db93;
+            color: var(--accent-green);
             font-size: 20px;
         }
 
         input[type="url"] {
             width: 100%;
             padding: 12px;
-            border: 2px solid #16db93;
+            border: 2px solid var(--accent-green);
             border-radius: 5px;
-            background-color: #1a1a2e;
-            color: #eee;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             font-size: 18px;
             box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
         input[type="url"]:focus {
             outline: none;
-            border-color: #f39c12;
-            background-color: #0f3460;
+            border-color: var(--accent-orange);
+            background-color: var(--bg-secondary);
         }
 
         button {
-            background-color: #16db93;
-            color: #1a1a2e;
+            background-color: var(--accent-green);
+            color: var(--text-secondary);
             border: none;
             padding: 15px 30px;
             font-size: 20px;
@@ -83,9 +138,9 @@
         }
 
         button:hover {
-            background-color: #f39c12;
+            background-color: var(--accent-orange);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px var(--shadow-color);
         }
 
         button:disabled {
@@ -96,7 +151,7 @@
         }
 
         .loading {
-            color: #f39c12;
+            color: var(--accent-orange);
             font-style: italic;
             font-size: 20px;
             text-align: center;
@@ -104,25 +159,26 @@
         }
 
         .error {
-            background-color: #e74c3c;
+            background-color: var(--error-bg);
             color: white;
             padding: 15px;
             border-radius: 5px;
             margin: 20px 0;
             font-size: 18px;
-            border: 2px solid #c0392b;
+            border: 2px solid var(--error-border);
         }
 
         .result-section {
-            background-color: #0f3460;
+            background-color: var(--bg-secondary);
             padding: 25px;
             border-radius: 10px;
             margin-top: 25px;
-            border: 2px solid #f39c12;
+            border: 2px solid var(--accent-orange);
+            box-shadow: 0 4px 15px var(--shadow-color);
         }
 
         .json-display {
-            background-color: #1a1a2e;
+            background-color: var(--bg-primary);
             padding: 20px;
             border-radius: 5px;
             font-family: 'Courier New', monospace;
@@ -130,13 +186,13 @@
             white-space: pre-wrap;
             max-height: 600px;
             overflow-y: auto;
-            border: 1px solid #666;
-            color: #eee;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
         }
 
         .feed-info {
-            background-color: #16db93;
-            color: #1a1a2e;
+            background-color: var(--accent-green);
+            color: var(--text-secondary);
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -148,60 +204,80 @@
         }
 
         .feed-item {
-            background-color: #1a1a2e;
+            background-color: var(--bg-primary);
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 5px;
-            border-left: 4px solid #16db93;
+            border-left: 4px solid var(--accent-green);
+            box-shadow: 0 2px 8px var(--shadow-color);
         }
 
         .item-title {
-            color: #f39c12;
+            color: var(--accent-orange);
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 8px;
         }
 
         .item-date {
-            color: #16db93;
+            color: var(--accent-green);
             font-size: 16px;
             margin-bottom: 8px;
         }
 
         .item-description {
-            color: #eee;
+            color: var(--text-primary);
             line-height: 1.5;
         }
 
         .example-urls {
-            background-color: #0f3460;
+            background-color: var(--bg-primary);
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
-            border: 1px solid #666;
+            border: 1px solid var(--border-color);
         }
 
         .example-urls h3 {
-            color: #16db93;
+            color: var(--accent-green);
             margin-top: 0;
             font-size: 20px;
         }
 
         .example-url {
-            color: #f39c12;
+            color: var(--accent-orange);
             cursor: pointer;
             text-decoration: underline;
             display: block;
             margin: 5px 0;
             font-size: 16px;
+            transition: color 0.3s ease;
         }
 
         .example-url:hover {
-            color: #16db93;
+            color: var(--accent-green);
+        }
+
+        /* Light mode specific adjustments */
+        [data-theme="light"] .feed-info a {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="light"] .item-description a {
+            color: var(--accent-green) !important;
+        }
+
+        [data-theme="light"] h1 {
+            text-shadow: 2px 2px 4px var(--shadow-color);
         }
     </style>
 </head>
 <body>
+    <!-- Theme toggle button -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+        🌙 Dark Mode
+    </button>
+
     <div class="container">
         <h1>🌐 API Calls Demo: RSS to JSON</h1>
         

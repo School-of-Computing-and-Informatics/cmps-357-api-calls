@@ -2,6 +2,53 @@
 // Using rsstojson.com service (no API key required)
 
 /**
+ * Theme Management Functions
+ */
+
+/**
+ * Initialize theme from localStorage or default to dark
+ */
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme);
+}
+
+/**
+ * Toggle between light and dark themes
+ */
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+/**
+ * Apply the theme to the document
+ */
+function applyTheme(theme) {
+    const themeToggle = document.getElementById('themeToggle');
+    
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        if (themeToggle) {
+            themeToggle.innerHTML = '🌙 Dark Mode';
+            themeToggle.setAttribute('title', 'Switch to dark mode');
+        }
+    } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if (themeToggle) {
+            themeToggle.innerHTML = '☀️ Light Mode';
+            themeToggle.setAttribute('title', 'Switch to light mode');
+        }
+    }
+}
+
+/**
+ * RSS Feed Functions
+ */
+
+/**
  * Use an example URL by clicking on it
  */
 function useExampleUrl(url) {
@@ -333,12 +380,19 @@ function escapeHtml(text) {
 }
 
 // Allow Enter key to trigger fetch
-document.getElementById('rssUrl').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        fetchRSSFeed();
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize theme on page load
+    initializeTheme();
+    
+    // Setup enter key event listener
+    document.getElementById('rssUrl').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            fetchRSSFeed();
+        }
+    });
 });
 
 // Welcome message
 console.log('🌐 RSS to JSON API Demo loaded successfully!');
 console.log('📡 Ready to make API calls to rsstojson.com');
+console.log('🎨 Theme toggle available in the top-right corner');
