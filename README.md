@@ -161,10 +161,10 @@ This section documents the development process and interactions that occurred du
 
 ### Initial Setup
 - **2025-09-28 09:53:49 -0500** - Initial repository created by @nicholas-g-lipari-phd
-- **2025-09-28 14:53:53 +0000** - Development plan established with requirements analysis
+- **2025-09-28 09:53:53 -0500** - Development plan established with requirements analysis
 
 ### Core Application Development
-- **2025-09-28 15:02:53 +0000** - Complete API calls demo application implemented
+- **2025-09-28 10:02:53 -0500** - Complete API calls demo application implemented
   - Created `index.html` with projector-friendly dark theme styling
   - Implemented `app.js` with RSS-to-JSON API integration
   - Added support for multiple API services with fallback mechanisms
@@ -173,7 +173,7 @@ This section documents the development process and interactions that occurred du
 
 ### Theme Enhancement Request
 - **Request received**: "Add a toggle button to switch between dark and light mode. Create the appropriate css schemes for light mode. @copilot"
-- **2025-09-28 15:25:13 +0000** - Dark/light mode toggle implemented
+- **2025-09-28 10:25:13 -0500** - Dark/light mode toggle implemented
   - Added theme toggle button in top-right corner
   - Implemented CSS variables for theme management
   - Created light theme with clean, professional appearance
@@ -182,7 +182,7 @@ This section documents the development process and interactions that occurred du
 
 ### RSS Feed Update Request
 - **Request received**: "Add `https://rss.nytimes.com/services/xml/rss/nyt/US.xml` to list of examples and remove CNN. That link for CNN is broken. @copilot"
-- **2025-09-28 15:40:59 +0000** - RSS feed examples updated
+- **2025-09-28 10:40:59 -0500** - RSS feed examples updated
   - Replaced broken CNN RSS link with NY Times US News feed
   - Updated all references in HTML, JavaScript, and documentation
   - Verified functionality with click-to-use examples
@@ -190,7 +190,7 @@ This section documents the development process and interactions that occurred du
 
 ### API Metadata Enhancement Request
 - **Request received**: "Add a description of the API call including the full URL to the top of the API response block. Also include any metadata that was returned from the API call, time taken to get a response, as well as relevant HTTP codes. @copilot"
-- **2025-09-28 15:50:57 +0000** - Comprehensive API call details implemented
+- **2025-09-28 10:50:57 -0500** - Comprehensive API call details implemented
   - Added API Call Details section with complete request/response information
   - Implemented request timing with millisecond accuracy
   - Added HTTP status code display with color coding
@@ -200,7 +200,7 @@ This section documents the development process and interactions that occurred du
 
 ### Documentation Enhancement Request
 - **Request received**: "Add the interactions and requests in this pull request to the readme file as a development log. Include times of requests. @copilot"
-- **2025-09-28 16:xx:xx +0000** - Development log documentation added *(current task)*
+- **2025-09-28 11:xx:xx -0500** - Development log documentation added *(current task)*
 
 ### Development Statistics
 - **Total commits**: 5 (excluding initial commit)
