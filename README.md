@@ -79,6 +79,7 @@ The application includes these pre-configured feeds:
 - **📰 BBC News**: `https://feeds.bbci.co.uk/news/rss.xml`
 - **📰 NY Times US News**: `https://rss.nytimes.com/services/xml/rss/nyt/US.xml`
 - **💻 TechCrunch**: `https://techcrunch.com/feed/`
+- **🧪 Demo RSS**: `https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/demo.rss` - Contains valid entries with full RSS fields and intentionally malformed entries for error handling demonstrations
 
 ## 🏗️ Project Structure
 
@@ -86,6 +87,7 @@ The application includes these pre-configured feeds:
 cmps-357-api-calls/
 ├── index.html          # Main HTML file with projector-friendly styling
 ├── app.js             # JavaScript with API logic and error handling
+├── demo.rss           # Demo RSS feed with valid and malformed entries for testing
 └── README.md          # This documentation
 ```
 

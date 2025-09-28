@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Demo RSS Feed - API Testing Examples</title>
+    <description>A demonstration RSS feed containing valid and malformed entries for API testing and error handling demonstrations</description>
+    <link>https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/</link>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 06 Jan 2025 00:00:00 GMT</lastBuildDate>
+    <managingEditor>admin@example.com (Demo Admin)</managingEditor>
+    <webMaster>webmaster@example.com (Web Master)</webMaster>
+    <generator>Hand-crafted RSS for API demonstration</generator>
+    <category>Technology</category>
+    <ttl>60</ttl>
+    <image>
+      <url>https://via.placeholder.com/144x144/1a1a2e/16db93?text=DEMO</url>
+      <title>Demo RSS Feed</title>
+      <link>https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/</link>
+      <width>144</width>
+      <height>144</height>
+    </image>
+    
+    <!-- Valid Entry 1 - All supported fields populated -->
+    <item>
+      <title>Understanding Modern API Patterns in Web Development</title>
+      <description>A comprehensive guide to implementing robust API patterns including error handling, fallback strategies, and CORS solutions for modern web applications.</description>
+      <link>https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/article1</link>
+      <guid isPermaLink="true">https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/article1</guid>
+      <pubDate>Mon, 06 Jan 2025 10:00:00 GMT</pubDate>
+      <author>john.doe@example.com (John Doe)</author>
+      <category>Web Development</category>
+      <category>APIs</category>
+      <source url="https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/demo.rss">Demo RSS Feed</source>
+      <enclosure url="https://via.placeholder.com/300x200/16db93/ffffff?text=API+Patterns" length="1024" type="image/png"/>
+      <content:encoded><![CDATA[<p>This article explores <strong>modern API patterns</strong> that are essential for building robust web applications. Key topics include:</p><ul><li>Error handling strategies</li><li>Fallback mechanisms</li><li>CORS implementations</li><li>Rate limiting</li></ul><p>Learn how to build APIs that gracefully handle failures and provide excellent user experiences.</p>]]></content:encoded>
+      <dc:creator>John Doe</dc:creator>
+      <dc:date>2025-01-06T10:00:00Z</dc:date>
+    </item>
+    
+    <!-- Valid Entry 2 - All supported fields populated -->
+    <item>
+      <title>RSS to JSON Conversion: Best Practices and Implementation</title>
+      <description>Explore the technical aspects of RSS to JSON conversion, including data normalization, field mapping, and handling different RSS formats for consistent JSON output.</description>
+      <link>https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/article2</link>
+      <guid isPermaLink="false">demo-article-2-2025-01-06</guid>
+      <pubDate>Mon, 06 Jan 2025 14:30:00 GMT</pubDate>
+      <author>jane.smith@example.com (Jane Smith)</author>
+      <category>Data Processing</category>
+      <category>JSON</category>
+      <category>RSS</category>
+      <source url="https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/demo.rss">Demo RSS Feed</source>
+      <enclosure url="https://via.placeholder.com/400x300/f39c12/ffffff?text=RSS+to+JSON" length="2048" type="image/jpeg"/>
+      <content:encoded><![CDATA[<p>Converting RSS feeds to JSON format requires careful handling of various RSS specifications and edge cases. This comprehensive guide covers:</p><h3>Key Conversion Challenges</h3><ul><li>Handling different RSS versions (0.91, 2.0, Atom)</li><li>Normalizing field names across formats</li><li>Managing HTML content in descriptions</li><li>Date format standardization</li></ul><p>Implementing robust conversion logic ensures consistent API responses regardless of the source feed format.</p>]]></content:encoded>
+      <dc:creator>Jane Smith</dc:creator>
+      <dc:date>2025-01-06T14:30:00Z</dc:date>
+    </item>
+    
+    <!-- Valid Entry 3 - All supported fields populated -->
+    <item>
+      <title>Building Educational Web Apps: A CMPS 357 Case Study</title>
+      <description>How to create engaging web applications for computer science education, featuring real-world API examples, interactive demonstrations, and student-friendly interfaces.</description>
+      <link>https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/article3</link>
+      <guid isPermaLink="true">https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/article3</guid>
+      <pubDate>Mon, 06 Jan 2025 16:45:00 GMT</pubDate>
+      <author>prof.garcia@example.com (Professor Garcia)</author>
+      <category>Education</category>
+      <category>Web Development</category>
+      <category>CMPS 357</category>
+      <source url="https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/demo.rss">Demo RSS Feed</source>
+      <enclosure url="https://via.placeholder.com/350x250/0f3460/16db93?text=Education" length="1536" type="image/png"/>
+      <content:encoded><![CDATA[<p>Educational web applications serve as powerful tools for teaching complex programming concepts. This case study examines the development of an API demonstration tool used in CMPS 357:</p><h3>Design Principles</h3><ul><li><strong>Projector-friendly</strong> color schemes for classroom use</li><li><strong>Interactive examples</strong> that students can experiment with</li><li><strong>Real-world scenarios</strong> using actual APIs</li><li><strong>Error handling demonstrations</strong> for learning robustness</li></ul><p>The application successfully bridges theory and practice, giving students hands-on experience with modern web development patterns.</p>]]></content:encoded>
+      <dc:creator>Professor Garcia</dc:creator>
+      <dc:date>2025-01-06T16:45:00Z</dc:date>
+    </item>
+    
+    <!-- Malformed Entry 1 - Invalid date formats, missing required fields, malformed content -->
+    <item>
+      <title>Malformed Entry Example: Invalid Date and Missing Fields</title>
+      <description>This entry demonstrates what happens when RSS entries have invalid date formats and are missing required fields.</description>
+      <link>https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/malformed1</link>
+      <guid>malformed-entry-1-invalid-dates</guid>
+      <pubDate>Not-A-Valid-Date-Format-2025-99-99</pubDate>
+      <author>broken.parser@example.com (Broken Parser)</author>
+      <category>Error Testing</category>
+      <!-- Missing closing source tag intentionally to test parser robustness -->
+      <source url="https://school-of-computing-and-informatics.github.io/cmps-357-api-calls/demo.rss">Demo RSS Feed</source>
+      <content:encoded><![CDATA[<p>This entry has an invalid date format and malformed source tag that should cause parsing issues in RSS parsers while remaining valid XML.</p>]]></content:encoded>
+      <dc:creator>Broken Parser</dc:creator>
+      <dc:date>invalid-date-format-here</dc:date>
+    </item>
+    
+    <!-- Malformed Entry 2 - Invalid field values and malformed GUID -->
+    <item>
+      <title>Malformed Entry Example: Invalid Field Values &amp; Encoding Issues</title>
+      <description>This entry contains invalid field values and encoding issues that should cause problems in RSS parsers but remain valid XML.</description>
+      <link>not-a-valid-url-scheme://broken-link</link>
+      <guid isPermaLink="invalid-boolean-value">malformed-entry-2-invalid-fields</guid>
+      <pubDate>2025-13-45T25:99:99Z</pubDate>
+      <author>invalid@domain-with-&amp;-characters.com (User With &amp; Symbols)</author>
+      <category>Error &lt; Testing &gt; &amp; Validation</category>
+      <source url="not-a-valid-url-&amp;-broken">Demo RSS Feed</source>
+      <enclosure url="not-a-valid-url" length="not-a-number" type="invalid/mime-type"/>
+      <content:encoded><![CDATA[<p>This entry contains intentionally malformed data like invalid dates (month 13, hour 25), invalid URLs, non-numeric length values, and invalid MIME types for testing RSS parser error handling.</p>]]></content:encoded>
+      <dc:creator>User With &amp; Symbols</dc:creator>
+      <dc:date>not-a-valid-iso-date</dc:date>
+    </item>
+    
+  </channel>
+</rss>
