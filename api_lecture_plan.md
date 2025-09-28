@@ -6,7 +6,7 @@ The sequence moves from simple examples to advanced topics, with live activities
 ---
 
 ## 1. Foundations: The Simple Example
-- **RSS â†’ JSON demo** (base case).
+- **RSS 2 JSON demo** (base case).
 - **Display raw vs processed data**: toggle between raw JSON and formatted output.
 - **Add more RSS sources** (sports, NASA, tech, local). Live swap during lecture.
 
