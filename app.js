@@ -86,6 +86,19 @@ async function fetchRSSFeed() {
     showLoading();
     disableButton();
     
+    // Track API call metadata
+    const apiCallMetadata = {
+        requestUrl: rssUrl,
+        startTime: Date.now(),
+        apiEndpoint: null,
+        httpStatus: null,
+        responseTime: null,
+        serviceName: null,
+        requestHeaders: {
+            'Accept': 'application/json'
+        }
+    };
+    
     try {
         // In a real environment, try multiple RSS to JSON services with CORS support
         // For demo purposes, we'll show mock data since API calls are blocked in this environment
@@ -100,41 +113,63 @@ async function fetchRSSFeed() {
         if (isRestrictedEnv) {
             // Use mock data for demonstration
             console.log('🔄 Using mock data for demonstration (API calls blocked in this environment)');
+            
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+            
             data = getMockRSSData(rssUrl);
-            successfulService = 'Mock Data (Demo Mode)';
+            apiCallMetadata.endTime = Date.now();
+            apiCallMetadata.responseTime = apiCallMetadata.endTime - apiCallMetadata.startTime;
+            apiCallMetadata.serviceName = 'Mock Data (Demo Mode)';
+            apiCallMetadata.apiEndpoint = 'Local Mock Service';
+            apiCallMetadata.httpStatus = 200;
+            apiCallMetadata.mockData = true;
+            
         } else {
             // Option 1: Try rss2json.com (supports CORS)
             try {
                 const rss2jsonUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
                 console.log('🚀 Trying rss2json.com API:', rss2jsonUrl);
                 
+                apiCallMetadata.apiEndpoint = rss2jsonUrl;
+                
                 const response1 = await fetch(rss2jsonUrl, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
+                    headers: apiCallMetadata.requestHeaders
                 });
+                
+                apiCallMetadata.endTime = Date.now();
+                apiCallMetadata.responseTime = apiCallMetadata.endTime - apiCallMetadata.startTime;
+                apiCallMetadata.httpStatus = response1.status;
                 
                 if (response1.ok) {
                     data = await response1.json();
-                    successfulService = 'rss2json.com';
+                    apiCallMetadata.serviceName = 'rss2json.com';
                     console.log('✅ rss2json.com API Response received:', data);
                 } else {
-                    throw new Error(`HTTP ${response1.status}`);
+                    throw new Error(`HTTP ${response1.status}: ${response1.statusText}`);
                 }
             } catch (error1) {
                 console.log('⚠️ rss2json.com failed, trying alternative...', error1.message);
+                
+                // Reset timing for second attempt
+                apiCallMetadata.startTime = Date.now();
                 
                 // Option 2: Try allorigins.win as CORS proxy
                 const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://api.rsstojson.com/v1/parser?rss_url=' + encodeURIComponent(rssUrl))}`;
                 console.log('🚀 Trying CORS proxy with rsstojson:', proxyUrl);
                 
+                apiCallMetadata.apiEndpoint = proxyUrl;
+                apiCallMetadata.fallbackService = true;
+                
                 const response2 = await fetch(proxyUrl, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
+                    headers: apiCallMetadata.requestHeaders
                 });
+                
+                apiCallMetadata.endTime = Date.now();
+                apiCallMetadata.responseTime = apiCallMetadata.endTime - apiCallMetadata.startTime;
+                apiCallMetadata.httpStatus = response2.status;
                 
                 if (!response2.ok) {
                     throw new Error(`HTTP error! status: ${response2.status} - ${response2.statusText}`);
@@ -142,15 +177,19 @@ async function fetchRSSFeed() {
                 
                 const proxyData = await response2.json();
                 data = JSON.parse(proxyData.contents);
-                successfulService = 'rsstojson.com (via proxy)';
+                apiCallMetadata.serviceName = 'rsstojson.com (via proxy)';
                 console.log('✅ Proxy API Response received:', data);
             }
         }
         
-        // Display results with service info
-        displayResults(data, successfulService);
+        // Display results with service info and API metadata
+        displayResults(data, apiCallMetadata);
         
     } catch (error) {
+        apiCallMetadata.endTime = Date.now();
+        apiCallMetadata.responseTime = apiCallMetadata.endTime - apiCallMetadata.startTime;
+        apiCallMetadata.error = error.message;
+        
         console.error('❌ Error fetching RSS feed:', error);
         showError(`Failed to fetch RSS feed: ${error.message}`);
     } finally {
@@ -162,8 +201,9 @@ async function fetchRSSFeed() {
 /**
  * Display the formatted results
  */
-function displayResults(data, serviceName = 'API Service') {
+function displayResults(data, apiMetadata) {
     const resultSection = document.getElementById('resultSection');
+    const apiDetails = document.getElementById('apiDetails');
     const feedInfo = document.getElementById('feedInfo');
     const feedItems = document.getElementById('feedItems');
     const jsonDisplay = document.getElementById('jsonDisplay');
@@ -171,22 +211,22 @@ function displayResults(data, serviceName = 'API Service') {
     // Normalize data structure (different APIs return different formats)
     let normalizedData = normalizeApiResponse(data);
     
+    // Show API call details
+    displayApiDetails(apiDetails, apiMetadata);
+    
     // Show feed information
     if (normalizedData.title || normalizedData.description) {
         feedInfo.innerHTML = `
             <strong>📰 ${normalizedData.title || 'RSS Feed'}</strong><br>
             ${normalizedData.description || 'No description available'}
-            ${normalizedData.link ? `<br>🔗 <a href="${normalizedData.link}" target="_blank" style="color: #1a1a2e;">${normalizedData.link}</a>` : ''}
-            <div style="margin-top: 8px; font-size: 14px; opacity: 0.8;">
-                ✅ Successfully fetched via ${serviceName}
-            </div>
+            ${normalizedData.link ? `<br>🔗 <a href="${normalizedData.link}" target="_blank" style="color: var(--text-secondary);">${normalizedData.link}</a>` : ''}
         `;
         feedInfo.style.display = 'block';
     }
     
     // Show feed items
     if (normalizedData.items && normalizedData.items.length > 0) {
-        feedItems.innerHTML = '<h3 style="color: #16db93; font-size: 22px; margin-bottom: 15px;">📋 Latest Articles (' + normalizedData.items.length + ' items)</h3>';
+        feedItems.innerHTML = '<h3 style="color: var(--accent-green); font-size: 22px; margin-bottom: 15px;">📋 Latest Articles (' + normalizedData.items.length + ' items)</h3>';
         
         // Display first 10 items to keep it manageable
         const itemsToShow = normalizedData.items.slice(0, 10);
@@ -208,7 +248,7 @@ function displayResults(data, serviceName = 'API Service') {
                 <div class="item-title">${escapeHtml(title)}</div>
                 <div class="item-date">📅 ${formattedDate}</div>
                 <div class="item-description">${escapeHtml(cleanDescription)}</div>
-                ${item.link || item.url ? `<div style="margin-top: 10px;"><a href="${item.link || item.url}" target="_blank" style="color: #16db93; text-decoration: none;">🔗 Read more →</a></div>` : ''}
+                ${item.link || item.url ? `<div style="margin-top: 10px;"><a href="${item.link || item.url}" target="_blank" style="color: var(--accent-green); text-decoration: none;">🔗 Read more →</a></div>` : ''}
             `;
             
             feedItems.appendChild(itemDiv);
@@ -218,13 +258,13 @@ function displayResults(data, serviceName = 'API Service') {
             const moreInfo = document.createElement('div');
             moreInfo.style.textAlign = 'center';
             moreInfo.style.padding = '15px';
-            moreInfo.style.color = '#f39c12';
+            moreInfo.style.color = 'var(--accent-orange)';
             moreInfo.style.fontStyle = 'italic';
             moreInfo.innerHTML = `... and ${normalizedData.items.length - 10} more items (showing first 10)`;
             feedItems.appendChild(moreInfo);
         }
     } else {
-        feedItems.innerHTML = '<p style="color: #f39c12; font-style: italic;">No feed items found.</p>';
+        feedItems.innerHTML = '<p style="color: var(--accent-orange); font-style: italic;">No feed items found.</p>';
     }
     
     // Show raw JSON (formatted)
@@ -235,6 +275,87 @@ function displayResults(data, serviceName = 'API Service') {
     
     // Scroll to results
     resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
+ * Display API call details and metadata
+ */
+function displayApiDetails(apiDetailsElement, metadata) {
+    const statusClass = metadata.httpStatus >= 200 && metadata.httpStatus < 300 ? 'api-status-success' : 'api-status-error';
+    const responseTimeFormatted = metadata.responseTime ? `${metadata.responseTime}ms` : 'N/A';
+    const currentTime = new Date().toLocaleString();
+    
+    let apiDetailsHTML = `
+        <h3>🔧 API Call Details</h3>
+        <div class="api-detail-row">
+            <div class="api-detail-label">Request URL:</div>
+            <div class="api-detail-value">${escapeHtml(metadata.requestUrl)}</div>
+        </div>
+        <div class="api-detail-row">
+            <div class="api-detail-label">API Endpoint:</div>
+            <div class="api-detail-value">${escapeHtml(metadata.apiEndpoint || 'N/A')}</div>
+        </div>
+        <div class="api-detail-row">
+            <div class="api-detail-label">Service:</div>
+            <div class="api-detail-value">${escapeHtml(metadata.serviceName || 'Unknown')}</div>
+        </div>
+        <div class="api-detail-row">
+            <div class="api-detail-label">HTTP Status:</div>
+            <div class="api-detail-value"><span class="${statusClass}">${metadata.httpStatus || 'N/A'}</span></div>
+        </div>
+        <div class="api-detail-row">
+            <div class="api-detail-label">Response Time:</div>
+            <div class="api-detail-value api-timing">${responseTimeFormatted}</div>
+        </div>
+        <div class="api-detail-row">
+            <div class="api-detail-label">Request Time:</div>
+            <div class="api-detail-value">${currentTime}</div>
+        </div>
+    `;
+    
+    // Add request headers info
+    if (metadata.requestHeaders) {
+        const headersString = Object.entries(metadata.requestHeaders)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(', ');
+        apiDetailsHTML += `
+        <div class="api-detail-row">
+            <div class="api-detail-label">Request Headers:</div>
+            <div class="api-detail-value">${escapeHtml(headersString)}</div>
+        </div>
+        `;
+    }
+    
+    // Add additional metadata if available
+    if (metadata.fallbackService) {
+        apiDetailsHTML += `
+        <div class="api-detail-row">
+            <div class="api-detail-label">Fallback Used:</div>
+            <div class="api-detail-value api-status-success">✅ Yes (Primary service failed)</div>
+        </div>
+        `;
+    }
+    
+    if (metadata.mockData) {
+        apiDetailsHTML += `
+        <div class="api-detail-row">
+            <div class="api-detail-label">Demo Mode:</div>
+            <div class="api-detail-value api-status-success">✅ Using mock data (API calls blocked)</div>
+        </div>
+        `;
+    }
+    
+    if (metadata.error) {
+        apiDetailsHTML += `
+        <div class="api-detail-row">
+            <div class="api-detail-label">Error:</div>
+            <div class="api-detail-value api-status-error">${escapeHtml(metadata.error)}</div>
+        </div>
+        `;
+    }
+    
+    apiDetailsElement.innerHTML = apiDetailsHTML;
+    apiDetailsElement.style.display = 'block';
 }
 
 /**

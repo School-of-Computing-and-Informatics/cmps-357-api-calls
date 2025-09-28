@@ -199,6 +199,58 @@
             font-weight: bold;
         }
 
+        .api-details {
+            background-color: var(--bg-primary);
+            border: 2px solid var(--accent-green);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .api-details h3 {
+            color: var(--accent-green);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+        }
+
+        .api-detail-row {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: flex-start;
+        }
+
+        .api-detail-label {
+            color: var(--accent-orange);
+            font-weight: bold;
+            min-width: 140px;
+            margin-right: 10px;
+        }
+
+        .api-detail-value {
+            color: var(--text-primary);
+            word-break: break-all;
+            flex: 1;
+        }
+
+        .api-status-success {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .api-status-error {
+            color: var(--error-bg);
+            font-weight: bold;
+        }
+
+        .api-timing {
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+
         .feed-items {
             margin-top: 20px;
         }
@@ -316,6 +368,7 @@
 
         <div id="resultSection" class="result-section" style="display: none;">
             <h2>📊 API Response</h2>
+            <div id="apiDetails" class="api-details" style="display: none;"></div>
             <div id="feedInfo" class="feed-info" style="display: none;"></div>
             <div id="feedItems" class="feed-items"></div>
             
