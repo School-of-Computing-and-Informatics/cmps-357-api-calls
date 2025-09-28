@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Understanding Modern API Patterns in Web Development</title>
+    <title>RSS to JSON Conversion: Best Practices and Implementation</title>
     <style>
         /* CSS Variables for theme colors - matching main app */
         :root {
@@ -47,6 +47,13 @@
             font-size: 24px;
             margin-top: 30px;
             margin-bottom: 15px;
+        }
+
+        h3 {
+            color: var(--accent-green);
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 10px;
         }
 
         .meta-info {
@@ -95,32 +102,36 @@
 </head>
 <body>
     <div class="container">
-        <h1>Understanding Modern API Patterns in Web Development</h1>
+        <h1>RSS to JSON Conversion: Best Practices and Implementation</h1>
         
         <div class="meta-info">
-            <p><strong>Author:</strong> John Doe</p>
-            <p><strong>Published:</strong> Monday, January 6, 2025 at 10:00 AM GMT</p>
-            <p><strong>Categories:</strong> Web Development, APIs</p>
+            <p><strong>Author:</strong> Jane Smith</p>
+            <p><strong>Published:</strong> Monday, January 6, 2025 at 2:30 PM GMT</p>
+            <p><strong>Categories:</strong> Data Processing, JSON, RSS</p>
         </div>
 
         <div class="content">
             <h2>🔍 Overview</h2>
-            <p>A comprehensive guide to implementing robust API patterns including error handling, fallback strategies, and CORS solutions for modern web applications.</p>
+            <p>Explore the technical aspects of RSS to JSON conversion, including data normalization, field mapping, and handling different RSS formats for consistent JSON output.</p>
 
-            <h2>🛠️ Key Topics Covered</h2>
-            <p>This article explores <strong>modern API patterns</strong> that are essential for building robust web applications. Key topics include:</p>
+            <h2>🛠️ Technical Deep Dive</h2>
+            <p>Converting RSS feeds to JSON format requires careful handling of various RSS specifications and edge cases. This comprehensive guide covers:</p>
+
+            <h3>Key Conversion Challenges</h3>
             <ul>
-                <li>Error handling strategies</li>
-                <li>Fallback mechanisms</li>
-                <li>CORS implementations</li>
-                <li>Rate limiting</li>
+                <li>Handling different RSS versions (0.91, 2.0, Atom)</li>
+                <li>Normalizing field names across formats</li>
+                <li>Managing HTML content in descriptions</li>
+                <li>Date format standardization</li>
             </ul>
 
-            <h2>🎯 Learning Objectives</h2>
-            <p>Learn how to build APIs that gracefully handle failures and provide excellent user experiences. This content is designed for the CMPS 357 course and provides practical, hands-on examples that students can implement and experiment with.</p>
+            <h2>🎯 Implementation Strategy</h2>
+            <p>Implementing robust conversion logic ensures consistent API responses regardless of the source feed format. This is particularly important when building educational tools that need to work reliably in classroom environments.</p>
+
+            <p>The techniques demonstrated in this article are directly applicable to the CMPS 357 API demonstration tool, where multiple RSS sources need to be processed consistently.</p>
         </div>
 
-        <a href="index.html" class="back-link">← Back to API Demo</a>
+        <a href="../" class="back-link">← Back to API Demo</a>
     </div>
 </body>
 </html>
