@@ -291,9 +291,12 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
             transition: all 0.2s ease;
             cursor: help;
-            width: 8ch;
+            min-width: 10ch;
             text-align: center;
             box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .category-bubble:hover {
