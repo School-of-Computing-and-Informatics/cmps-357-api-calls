@@ -190,6 +190,57 @@
             color: var(--text-primary);
         }
 
+        /* Side-by-side comparison styles */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison-section {
+            background-color: var(--bg-primary);
+            border-radius: 8px;
+            border: 2px solid var(--accent-green);
+            overflow: hidden;
+        }
+
+        .comparison-header {
+            background-color: var(--accent-green);
+            color: var(--text-secondary);
+            padding: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .comparison-content {
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .rss-comparison {
+            border-color: var(--accent-orange);
+        }
+
+        .rss-comparison .comparison-header {
+            background-color: var(--accent-orange);
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            .comparison-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
         .feed-info {
             background-color: var(--accent-green);
             color: var(--text-secondary);
@@ -375,8 +426,17 @@
             <div id="feedInfo" class="feed-info" style="display: none;"></div>
             <div id="feedItems" class="feed-items"></div>
             
-            <h2>🔍 Raw JSON Data</h2>
-            <div id="jsonDisplay" class="json-display"></div>
+            <h2>🔍 Side-by-Side Comparison: RSS Original vs JSON Converted</h2>
+            <div class="comparison-container">
+                <div class="comparison-section rss-comparison">
+                    <div class="comparison-header">📄 Original RSS XML</div>
+                    <div id="rssDisplay" class="comparison-content"></div>
+                </div>
+                <div class="comparison-section">
+                    <div class="comparison-header">🔧 Converted JSON</div>
+                    <div id="jsonDisplay" class="comparison-content"></div>
+                </div>
+            </div>
         </div>
     </div>
 
