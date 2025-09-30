@@ -104,11 +104,12 @@ async function fetchRSSFeed() {
         // For demo purposes, we'll show mock data since API calls are blocked in this environment
         
         let data;
+        let originalRssXml = null;
         let successfulService = '';
         
         // Check if we're in a restricted environment (like GitHub Codespaces)
-        const isRestrictedEnv = window.location.hostname === 'localhost' && 
-                               window.location.port === '8000';
+        const isRestrictedEnv = window.location.hostname === 'localhost' || 
+                               window.location.hostname === '127.0.0.1';
         
         if (isRestrictedEnv) {
             // Use mock data for demonstration
@@ -118,6 +119,7 @@ async function fetchRSSFeed() {
             await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
             
             data = getMockRSSData(rssUrl);
+            originalRssXml = getMockRSSXML(rssUrl);
             apiCallMetadata.endTime = Date.now();
             apiCallMetadata.responseTime = apiCallMetadata.endTime - apiCallMetadata.startTime;
             apiCallMetadata.serviceName = 'Mock Data (Demo Mode)';
@@ -133,21 +135,34 @@ async function fetchRSSFeed() {
                 
                 apiCallMetadata.apiEndpoint = rss2jsonUrl;
                 
-                const response1 = await fetch(rss2jsonUrl, {
-                    method: 'GET',
-                    headers: apiCallMetadata.requestHeaders
-                });
+                // Fetch both the JSON conversion and original RSS in parallel
+                const [jsonResponse, rssResponse] = await Promise.all([
+                    fetch(rss2jsonUrl, {
+                        method: 'GET',
+                        headers: apiCallMetadata.requestHeaders
+                    }),
+                    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`, {
+                        method: 'GET'
+                    })
+                ]);
                 
                 apiCallMetadata.endTime = Date.now();
                 apiCallMetadata.responseTime = apiCallMetadata.endTime - apiCallMetadata.startTime;
-                apiCallMetadata.httpStatus = response1.status;
+                apiCallMetadata.httpStatus = jsonResponse.status;
                 
-                if (response1.ok) {
-                    data = await response1.json();
+                if (jsonResponse.ok) {
+                    data = await jsonResponse.json();
                     apiCallMetadata.serviceName = 'rss2json.com';
                     console.log('✅ rss2json.com API Response received:', data);
+                    
+                    // Try to get original RSS XML
+                    if (rssResponse.ok) {
+                        const rssData = await rssResponse.json();
+                        originalRssXml = rssData.contents;
+                        console.log('✅ Original RSS XML fetched successfully');
+                    }
                 } else {
-                    throw new Error(`HTTP ${response1.status}: ${response1.statusText}`);
+                    throw new Error(`HTTP ${jsonResponse.status}: ${jsonResponse.statusText}`);
                 }
             } catch (error1) {
                 console.log('⚠️ rss2json.com failed, trying alternative...', error1.message);
@@ -157,33 +172,47 @@ async function fetchRSSFeed() {
                 
                 // Option 2: Try allorigins.win as CORS proxy
                 const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://api.rsstojson.com/v1/parser?rss_url=' + encodeURIComponent(rssUrl))}`;
+                const rssProxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
                 console.log('🚀 Trying CORS proxy with rsstojson:', proxyUrl);
                 
                 apiCallMetadata.apiEndpoint = proxyUrl;
                 apiCallMetadata.fallbackService = true;
                 
-                const response2 = await fetch(proxyUrl, {
-                    method: 'GET',
-                    headers: apiCallMetadata.requestHeaders
-                });
+                // Fetch both JSON conversion and original RSS
+                const [jsonResponse, rssResponse] = await Promise.all([
+                    fetch(proxyUrl, {
+                        method: 'GET',
+                        headers: apiCallMetadata.requestHeaders
+                    }),
+                    fetch(rssProxyUrl, {
+                        method: 'GET'
+                    })
+                ]);
                 
                 apiCallMetadata.endTime = Date.now();
                 apiCallMetadata.responseTime = apiCallMetadata.endTime - apiCallMetadata.startTime;
-                apiCallMetadata.httpStatus = response2.status;
+                apiCallMetadata.httpStatus = jsonResponse.status;
                 
-                if (!response2.ok) {
-                    throw new Error(`HTTP error! status: ${response2.status} - ${response2.statusText}`);
+                if (!jsonResponse.ok) {
+                    throw new Error(`HTTP error! status: ${jsonResponse.status} - ${jsonResponse.statusText}`);
                 }
                 
-                const proxyData = await response2.json();
+                const proxyData = await jsonResponse.json();
                 data = JSON.parse(proxyData.contents);
                 apiCallMetadata.serviceName = 'rsstojson.com (via proxy)';
                 console.log('✅ Proxy API Response received:', data);
+                
+                // Get original RSS
+                if (rssResponse.ok) {
+                    const rssData = await rssResponse.json();
+                    originalRssXml = rssData.contents;
+                    console.log('✅ Original RSS XML fetched via proxy');
+                }
             }
         }
         
-        // Display results with service info and API metadata
-        displayResults(data, apiCallMetadata);
+        // Display results with service info, API metadata, and original RSS
+        displayResults(data, apiCallMetadata, originalRssXml);
         
     } catch (error) {
         apiCallMetadata.endTime = Date.now();
@@ -201,12 +230,13 @@ async function fetchRSSFeed() {
 /**
  * Display the formatted results
  */
-function displayResults(data, apiMetadata) {
+function displayResults(data, apiMetadata, originalRssXml = null) {
     const resultSection = document.getElementById('resultSection');
     const apiDetails = document.getElementById('apiDetails');
     const feedInfo = document.getElementById('feedInfo');
     const feedItems = document.getElementById('feedItems');
     const jsonDisplay = document.getElementById('jsonDisplay');
+    const rssDisplay = document.getElementById('rssDisplay');
     
     // Normalize data structure (different APIs return different formats)
     let normalizedData = normalizeApiResponse(data);
@@ -240,12 +270,17 @@ function displayResults(data, apiMetadata) {
             const formattedDate = pubDate ? new Date(pubDate).toLocaleString() : 'No Date';
             const description = item.description || item.content || item.summary || 'No description available';
             
+            // Extract categories for this item
+            const categories = extractCategories(item);
+            const categoryBubblesHtml = createCategoryBubbles(categories);
+            
             // Clean up description (remove HTML tags and limit length)
             const cleanDescription = stripHtml(description).substring(0, 300) + 
                                    (description.length > 300 ? '...' : '');
             
             itemDiv.innerHTML = `
                 <div class="item-title">${escapeHtml(title)}</div>
+                ${categoryBubblesHtml}
                 <div class="item-date">📅 ${formattedDate}</div>
                 <div class="item-description">${escapeHtml(cleanDescription)}</div>
                 ${item.link || item.url ? `<div style="margin-top: 10px;"><a href="${item.link || item.url}" target="_blank" style="color: var(--accent-green); text-decoration: none;">🔗 Read more →</a></div>` : ''}
@@ -267,8 +302,15 @@ function displayResults(data, apiMetadata) {
         feedItems.innerHTML = '<p style="color: var(--accent-orange); font-style: italic;">No feed items found.</p>';
     }
     
-    // Show raw JSON (formatted)
+    // Show formatted JSON
     jsonDisplay.textContent = JSON.stringify(data, null, 2);
+    
+    // Show original RSS XML if available
+    if (originalRssXml) {
+        rssDisplay.textContent = formatXML(originalRssXml);
+    } else {
+        rssDisplay.innerHTML = '<span style="color: var(--accent-orange); font-style: italic;">Original RSS XML not available<br><br>In demo mode or due to CORS restrictions.</span>';
+    }
     
     // Show results section
     resultSection.style.display = 'block';
@@ -368,13 +410,18 @@ function normalizeApiResponse(data) {
             title: data.feed.title,
             description: data.feed.description,
             link: data.feed.link,
-            items: data.items
+            items: data.items.map(item => normalizeRSSItem(item))
         };
     }
     
     // Handle rsstojson.com format
     if (data.title && data.items) {
-        return data;
+        return {
+            title: data.title,
+            description: data.description,
+            link: data.link,
+            items: data.items.map(item => normalizeRSSItem(item))
+        };
     }
     
     // Handle other formats - try to extract what we can
@@ -382,8 +429,60 @@ function normalizeApiResponse(data) {
         title: data.title || data.name || 'RSS Feed',
         description: data.description || data.subtitle || '',
         link: data.link || data.url || '',
-        items: data.items || data.entries || []
+        items: (data.items || data.entries || []).map(item => normalizeRSSItem(item))
     };
+}
+
+/**
+ * Normalize RSS item to ensure consistent category handling
+ */
+function normalizeRSSItem(item) {
+    // Create a normalized item with all the original fields
+    const normalizedItem = { ...item };
+    
+    // Extract categories from various possible fields and formats
+    let categories = extractCategories(item);
+    
+    // If no categories found, try to extract from other common RSS fields
+    if (categories.length === 0) {
+        // Try RSS 2.0 category field variations
+        if (item.category) {
+            if (typeof item.category === 'string') {
+                categories = [item.category];
+            } else if (Array.isArray(item.category)) {
+                categories = item.category;
+            }
+        }
+        
+        // Try Dublin Core subject field
+        if (categories.length === 0 && item['dc:subject']) {
+            if (typeof item['dc:subject'] === 'string') {
+                categories = [item['dc:subject']];
+            } else if (Array.isArray(item['dc:subject'])) {
+                categories = item['dc:subject'];
+            }
+        }
+        
+        // Try tags field (some feeds use this)
+        if (categories.length === 0 && item.tags) {
+            if (typeof item.tags === 'string') {
+                categories = item.tags.split(',').map(tag => tag.trim());
+            } else if (Array.isArray(item.tags)) {
+                categories = item.tags;
+            }
+        }
+    }
+    
+    // Clean and normalize categories
+    categories = categories
+        .map(cat => cat ? cat.toString().trim() : '')
+        .filter(cat => cat.length > 0)
+        .slice(0, 5); // Limit to max 5 categories to keep UI clean
+    
+    // Add categories to the normalized item
+    normalizedItem.categories = categories;
+    
+    return normalizedItem;
 }
 
 /**
@@ -409,34 +508,209 @@ function getMockRSSData(rssUrl) {
                 title: "Breaking: Major Technology Breakthrough Announced",
                 pubDate: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 minutes ago
                 description: "Scientists have made a significant breakthrough in quantum computing technology that could revolutionize how we process information. This development promises to accelerate computational speeds by orders of magnitude.",
-                link: "https://example.com/article1"
+                link: "https://example.com/article1",
+                categories: ["Technology", "Science"]
             },
             {
                 title: "Global Climate Summit Reaches Historic Agreement",
                 pubDate: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
                 description: "World leaders have reached a groundbreaking consensus on climate action during the latest international summit. The agreement includes ambitious targets for carbon reduction and renewable energy adoption.",
-                link: "https://example.com/article2"
+                link: "https://example.com/article2",
+                categories: ["Environment", "Politics", "World News"]
             },
             {
                 title: "New Study Reveals Surprising Health Benefits",
                 pubDate: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(), // 4 hours ago
                 description: "Researchers have discovered unexpected health benefits from a common daily activity. The long-term study involving thousands of participants shows promising results for overall wellbeing.",
-                link: "https://example.com/article3"
+                link: "https://example.com/article3",
+                categories: ["Health", "Science", "Research"]
             },
             {
                 title: "Space Exploration Mission Launches Successfully",
                 pubDate: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(), // 6 hours ago
                 description: "The latest space mission has launched successfully, carrying advanced scientific instruments to explore distant planets. The mission aims to gather crucial data about potential life beyond Earth.",
-                link: "https://example.com/article4"
+                link: "https://example.com/article4",
+                categories: ["Space", "Science", "Technology"]
             },
             {
                 title: "Economic Markets Show Strong Recovery Signs",
                 pubDate: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(), // 8 hours ago
                 description: "Financial markets are displaying robust recovery indicators following recent global events. Analysts are optimistic about sustained growth in key sectors throughout the coming quarter.",
-                link: "https://example.com/article5"
+                link: "https://example.com/article5",
+                categories: ["Business", "Economics", "Finance"]
             }
         ]
     };
+}
+
+/**
+ * Generate mock RSS XML for demonstration when APIs are blocked
+ */
+function getMockRSSXML(rssUrl) {
+    const feedName = rssUrl.includes('bbc') ? 'BBC News' :
+                     rssUrl.includes('nytimes') ? 'NY Times US News' :
+                     rssUrl.includes('techcrunch') ? 'TechCrunch' :
+                     rssUrl.includes('demo.rss') ? 'Demo RSS Feed - API Testing Examples' :
+                     'Sample RSS Feed';
+    
+    const feedLink = rssUrl.replace('/rss.xml', '').replace('/feed/', '');
+    
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>${feedName}</title>
+    <description>Latest news and updates from ${feedName} - This is mock data for demonstration purposes</description>
+    <link>${feedLink}</link>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <language>en-US</language>
+    <atom:link href="${rssUrl}" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Breaking: Major Technology Breakthrough Announced</title>
+      <description>Scientists have made a significant breakthrough in quantum computing technology that could revolutionize how we process information. This development promises to accelerate computational speeds by orders of magnitude.</description>
+      <link>https://example.com/article1</link>
+      <pubDate>${new Date(Date.now() - 1000 * 60 * 30).toUTCString()}</pubDate>
+      <guid>https://example.com/article1</guid>
+    </item>
+    
+    <item>
+      <title>Global Climate Summit Reaches Historic Agreement</title>
+      <description>World leaders have reached a groundbreaking consensus on climate action during the latest international summit. The agreement includes ambitious targets for carbon reduction and renewable energy adoption.</description>
+      <link>https://example.com/article2</link>
+      <pubDate>${new Date(Date.now() - 1000 * 60 * 60 * 2).toUTCString()}</pubDate>
+      <guid>https://example.com/article2</guid>
+    </item>
+    
+    <item>
+      <title>New Study Reveals Surprising Health Benefits</title>
+      <description>Researchers have discovered unexpected health benefits from a common daily activity. The long-term study involving thousands of participants shows promising results for overall wellbeing.</description>
+      <link>https://example.com/article3</link>
+      <pubDate>${new Date(Date.now() - 1000 * 60 * 60 * 4).toUTCString()}</pubDate>
+      <guid>https://example.com/article3</guid>
+    </item>
+    
+    <item>
+      <title>Space Exploration Mission Launches Successfully</title>
+      <description>The latest space mission has launched successfully, carrying advanced scientific instruments to explore distant planets. The mission aims to gather crucial data about potential life beyond Earth.</description>
+      <link>https://example.com/article4</link>
+      <pubDate>${new Date(Date.now() - 1000 * 60 * 60 * 6).toUTCString()}</pubDate>
+      <guid>https://example.com/article4</guid>
+    </item>
+    
+    <item>
+      <title>Economic Markets Show Strong Recovery Signs</title>
+      <description>Financial markets are displaying robust recovery indicators following recent global events. Analysts are optimistic about sustained growth in key sectors throughout the coming quarter.</description>
+      <link>https://example.com/article5</link>
+      <pubDate>${new Date(Date.now() - 1000 * 60 * 60 * 8).toUTCString()}</pubDate>
+      <guid>https://example.com/article5</guid>
+    </item>
+    
+  </channel>
+</rss>`;
+}
+
+/**
+ * Category Management Functions
+ */
+
+// Global category color mapping to ensure consistency across the page
+let categoryColorMap = new Map();
+
+/**
+ * Generate a consistent color for a category using a simple hash function
+ */
+function generateCategoryColor(categoryName) {
+    // If we already have a color for this category, return it
+    if (categoryColorMap.has(categoryName)) {
+        return categoryColorMap.get(categoryName);
+    }
+    
+    // Simple hash function to generate consistent colors
+    let hash = 0;
+    for (let i = 0; i < categoryName.length; i++) {
+        const char = categoryName.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    // Generate HSL color with good saturation and lightness for visibility
+    const hue = Math.abs(hash) % 360;
+    const saturation = 65 + (Math.abs(hash) % 25); // 65-90%
+    const lightness = 45 + (Math.abs(hash) % 20); // 45-65%
+    
+    const backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    
+    // Calculate text color based on background lightness
+    // Use white text for darker backgrounds, dark text for lighter backgrounds
+    const textColor = lightness < 55 ? '#ffffff' : '#000000';
+    
+    const colorInfo = {
+        backgroundColor,
+        textColor,
+        hue,
+        saturation,
+        lightness
+    };
+    
+    // Store in our global map for consistency
+    categoryColorMap.set(categoryName, colorInfo);
+    
+    return colorInfo;
+}
+
+/**
+ * Extract and normalize categories from RSS item
+ */
+function extractCategories(item) {
+    let categories = [];
+    
+    // Handle different possible category field formats
+    if (item.categories && Array.isArray(item.categories)) {
+        categories = item.categories;
+    } else if (item.category) {
+        if (Array.isArray(item.category)) {
+            categories = item.category;
+        } else {
+            categories = [item.category];
+        }
+    } else if (item['dc:subject']) {
+        if (Array.isArray(item['dc:subject'])) {
+            categories = item['dc:subject'];
+        } else {
+            categories = [item['dc:subject']];
+        }
+    }
+    
+    // Clean up categories: trim whitespace, remove empty ones, limit length
+    categories = categories
+        .map(cat => cat ? cat.toString().trim() : '')
+        .filter(cat => cat.length > 0)
+        .map(cat => cat.length > 8 ? cat.substring(0, 8) : cat);
+    
+    return categories;
+}
+
+/**
+ * Create category bubble HTML
+ */
+function createCategoryBubbles(categories) {
+    if (!categories || categories.length === 0) {
+        return '';
+    }
+    
+    const bubbles = categories.map(category => {
+        const colorInfo = generateCategoryColor(category);
+        const truncatedCategory = category.length > 8 ? category.substring(0, 8) : category;
+        
+        return `<span class="category-bubble" 
+                      style="background-color: ${colorInfo.backgroundColor}; 
+                             color: ${colorInfo.textColor};"
+                      title="${escapeHtml(category)}">
+                    ${escapeHtml(truncatedCategory)}
+                </span>`;
+    }).join('');
+    
+    return `<div class="category-bubbles">${bubbles}</div>`;
 }
 
 /**
@@ -499,6 +773,56 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+/**
+ * Format XML string with proper indentation for display
+ */
+function formatXML(xml) {
+    try {
+        // Remove extra whitespace and normalize
+        let formatted = xml.replace(/\s+</g, '<').replace(/>\s+/g, '>');
+        
+        // Add line breaks after tags for better readability
+        formatted = formatted.replace(/></g, '>\n<');
+        
+        // Handle self-closing tags and content within tags
+        formatted = formatted.replace(/(<[^>]+>)([^<]+)/g, '$1\n$2');
+        
+        // Simple indentation
+        const lines = formatted.split('\n');
+        let indentLevel = 0;
+        const indentString = '  '; // 2 spaces
+        
+        const formattedLines = lines.map(line => {
+            const trimmedLine = line.trim();
+            
+            if (trimmedLine === '') return '';
+            
+            // Decrease indent for closing tags
+            if (trimmedLine.startsWith('</')) {
+                indentLevel = Math.max(0, indentLevel - 1);
+            }
+            
+            const indentedLine = indentString.repeat(indentLevel) + trimmedLine;
+            
+            // Increase indent for opening tags (but not self-closing or processing instruction tags)
+            if (trimmedLine.startsWith('<') && 
+                !trimmedLine.startsWith('</') && 
+                !trimmedLine.startsWith('<?') &&
+                !trimmedLine.endsWith('/>') &&
+                !trimmedLine.includes('</')) {
+                indentLevel++;
+            }
+            
+            return indentedLine;
+        });
+        
+        return formattedLines.join('\n');
+    } catch (error) {
+        console.warn('XML formatting failed:', error);
+        return xml; // Return original if formatting fails
+    }
 }
 
 // Allow Enter key to trigger fetch
