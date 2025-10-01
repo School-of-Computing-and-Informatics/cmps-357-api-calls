@@ -307,7 +307,19 @@ function displayResults(data, apiMetadata, originalRssXml = null) {
     
     // Show original RSS XML if available
     if (originalRssXml) {
-        rssDisplay.textContent = formatXML(originalRssXml);
+        // Detect and decode data URL if needed
+        let xmlToDisplay = originalRssXml;
+        const dataUrlMatch = /^data:application\/rss\+xml.*;base64,(.+)$/i.exec(originalRssXml);
+        if (dataUrlMatch) {
+            try {
+                // Decode base64 to string
+                const decoded = atob(dataUrlMatch[1]);
+                xmlToDisplay = decoded;
+            } catch (e) {
+                xmlToDisplay = '[Error decoding base64 RSS XML]';
+            }
+        }
+        rssDisplay.textContent = formatXML(xmlToDisplay);
     } else {
         rssDisplay.innerHTML = '<span style="color: var(--accent-orange); font-style: italic;">Original RSS XML not available<br><br>In demo mode or due to CORS restrictions.</span>';
     }
