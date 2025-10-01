@@ -693,24 +693,36 @@ function extractCategories(item) {
 /**
  * Create category bubble HTML
  */
+/**
+ * Generate HTML for unique category bubbles.
+ * Avoids duplicates where the first 8 letters (case-insensitive) match.
+ * @param {string[]} categories - Array of category strings
+ * @returns {string} HTML string for category bubbles
+ */
 function createCategoryBubbles(categories) {
     if (!categories || categories.length === 0) {
         return '';
     }
-    
-    const bubbles = categories.map(category => {
-        const colorInfo = generateCategoryColor(category);
-        const truncatedCategory = category.length > 8 ? category.substring(0, 8) : category;
-        
-        return `<span class="category-bubble" 
+    const seen = new Set();
+    const bubbles = [];
+    for (const category of categories) {
+        if (typeof category !== 'string') continue;
+        const key = category.trim().toLowerCase().slice(0, 8);
+        if (!seen.has(key)) {
+            seen.add(key);
+            const colorInfo = generateCategoryColor(category);
+            const truncatedCategory = category.length > 8 ? category.substring(0, 8) : category;
+            bubbles.push(
+                `<span class="category-bubble" 
                       style="background-color: ${colorInfo.backgroundColor}; 
                              color: ${colorInfo.textColor};"
                       title="${escapeHtml(category)}">
                     ${escapeHtml(truncatedCategory)}
-                </span>`;
-    }).join('');
-    
-    return `<div class="category-bubbles">${bubbles}</div>`;
+                </span>`
+            );
+        }
+    }
+    return `<div class="category-bubbles">${bubbles.join('')}</div>`;
 }
 
 /**
