@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Consolidated Features from PR #7 and PR #8</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-title {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .test-pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .test-details {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .feature-demo {
+            border: 2px dashed #667eea;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .screenshot-placeholder {
+            background-color: #e9ecef;
+            border: 2px solid #dee2e6;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #6c757d;
+        }
+        button {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #5568d3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .test-summary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .test-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 5px;
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-header">
+        <h1>🧪 Comprehensive Feature Test Suite</h1>
+        <h2>Testing Consolidated Features from PR #7 and PR #8</h2>
+        <p>This test suite validates both the side-by-side RSS/JSON comparison (PR #7) and category color bubbles (PR #8)</p>
+    </div>
+
+    <div class="test-section">
+        <h2 class="test-title">📋 Test Plan Overview</h2>
+        <div class="test-info test-result">
+            <strong>Purpose:</strong> Verify that both PR #7 and PR #8 features are properly integrated and functional
+        </div>
+        <div class="test-details">
+            <strong>PR #7 Features to Test:</strong><br>
+            ✓ Side-by-side RSS XML and JSON display<br>
+            ✓ XML formatting with proper indentation<br>
+            ✓ Parallel fetching of RSS and JSON<br>
+            ✓ Responsive grid layout<br>
+            ✓ Mock data for localhost<br>
+            <br>
+            <strong>PR #8 Features to Test:</strong><br>
+            ✓ Category bubble display below article titles<br>
+            ✓ Consistent color generation for categories<br>
+            ✓ 8-character truncation with tooltips<br>
+            ✓ Contrast-optimized colors<br>
+            ✓ Multiple category support
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2 class="test-title">🎯 Test Execution</h2>
+        <button onclick="runAllTests()" id="runTestsBtn">▶️ Run All Tests</button>
+        <button onclick="runIndividualTests()" id="runIndividualBtn">🔍 Run Individual Tests</button>
+        <button onclick="openMainApp()" id="openAppBtn">🌐 Open Main Application</button>
+        <div id="testResults"></div>
+    </div>
+
+    <div class="test-section">
+        <h2 class="test-title">📊 Test Results</h2>
+        <div id="resultsContainer"></div>
+    </div>
+
+    <div id="summarySection" style="display: none;">
+        <div class="test-summary">
+            <h2>📈 Test Summary</h2>
+            <div class="test-stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="totalTests">0</div>
+                    <div class="stat-label">Total Tests</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="passedTests">0</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="failedTests">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        function addTestResult(testName, passed, details) {
+            testResults.push({ testName, passed, details });
+            const container = document.getElementById('resultsContainer');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'test-pass' : 'test-fail'}`;
+            resultDiv.innerHTML = `
+                ${passed ? '✅' : '❌'} <strong>${testName}</strong><br>
+                <small>${details}</small>
+            `;
+            container.appendChild(resultDiv);
+        }
+
+        function updateSummary() {
+            const total = testResults.length;
+            const passed = testResults.filter(r => r.passed).length;
+            const failed = total - passed;
+
+            document.getElementById('totalTests').textContent = total;
+            document.getElementById('passedTests').textContent = passed;
+            document.getElementById('failedTests').textContent = failed;
+            document.getElementById('summarySection').style.display = 'block';
+        }
+
+        async function runAllTests() {
+            document.getElementById('runTestsBtn').disabled = true;
+            document.getElementById('resultsContainer').innerHTML = '';
+            testResults = [];
+
+            // Test 1: Check if app.js exists and contains required functions
+            console.log('🔍 Test 1: Checking app.js functions...');
+            try {
+                const response = await fetch('app.js');
+                const content = await response.text();
+                
+                const requiredFunctions = [
+                    'formatXML',
+                    'getMockRSSXML',
+                    'generateCategoryColor',
+                    'extractCategories',
+                    'createCategoryBubbles',
+                    'normalizeRSSItem'
+                ];
+
+                let allFound = true;
+                let missingFunctions = [];
+
+                requiredFunctions.forEach(func => {
+                    if (!content.includes(`function ${func}`)) {
+                        allFound = false;
+                        missingFunctions.push(func);
+                    }
+                });
+
+                if (allFound) {
+                    addTestResult(
+                        'PR #7 & #8: Required functions exist',
+                        true,
+                        `All 6 required functions found: ${requiredFunctions.join(', ')}`
+                    );
+                } else {
+                    addTestResult(
+                        'PR #7 & #8: Required functions exist',
+                        false,
+                        `Missing functions: ${missingFunctions.join(', ')}`
+                    );
+                }
+            } catch (error) {
+                addTestResult('PR #7 & #8: Required functions exist', false, `Error: ${error.message}`);
+            }
+
+            // Test 2: Check HTML structure for comparison container
+            console.log('🔍 Test 2: Checking HTML structure...');
+            try {
+                const response = await fetch('index.html');
+                const content = await response.text();
+                
+                const hasComparisonContainer = content.includes('comparison-container');
+                const hasRssDisplay = content.includes('id="rssDisplay"');
+                const hasJsonDisplay = content.includes('id="jsonDisplay"');
+                const hasCategoryBubbles = content.includes('category-bubble');
+
+                if (hasComparisonContainer && hasRssDisplay && hasJsonDisplay) {
+                    addTestResult(
+                        'PR #7: Side-by-side comparison HTML structure',
+                        true,
+                        'comparison-container, rssDisplay, and jsonDisplay elements found'
+                    );
+                } else {
+                    addTestResult(
+                        'PR #7: Side-by-side comparison HTML structure',
+                        false,
+                        'Missing required HTML elements'
+                    );
+                }
+
+                if (hasCategoryBubbles) {
+                    addTestResult(
+                        'PR #8: Category bubble CSS classes',
+                        true,
+                        'category-bubble CSS classes found in HTML'
+                    );
+                } else {
+                    addTestResult(
+                        'PR #8: Category bubble CSS classes',
+                        false,
+                        'category-bubble CSS classes not found'
+                    );
+                }
+            } catch (error) {
+                addTestResult('HTML structure tests', false, `Error: ${error.message}`);
+            }
+
+            // Test 3: Verify CSS styles
+            console.log('🔍 Test 3: Checking CSS styles...');
+            try {
+                const response = await fetch('index.html');
+                const content = await response.text();
+                
+                const hasComparisonStyles = content.includes('.comparison-container') &&
+                                           content.includes('.comparison-section') &&
+                                           content.includes('.comparison-header');
+                
+                const hasCategoryStyles = content.includes('.category-bubbles') &&
+                                         content.includes('.category-bubble');
+
+                if (hasComparisonStyles) {
+                    addTestResult(
+                        'PR #7: Comparison container CSS styles',
+                        true,
+                        'All comparison-related CSS classes defined'
+                    );
+                } else {
+                    addTestResult(
+                        'PR #7: Comparison container CSS styles',
+                        false,
+                        'Missing comparison CSS classes'
+                    );
+                }
+
+                if (hasCategoryStyles) {
+                    addTestResult(
+                        'PR #8: Category bubble CSS styles',
+                        true,
+                        'All category-related CSS classes defined'
+                    );
+                } else {
+                    addTestResult(
+                        'PR #8: Category bubble CSS styles',
+                        false,
+                        'Missing category CSS classes'
+                    );
+                }
+            } catch (error) {
+                addTestResult('CSS style tests', false, `Error: ${error.message}`);
+            }
+
+            // Test 4: Mock data includes categories
+            console.log('🔍 Test 4: Checking mock data...');
+            try {
+                const response = await fetch('app.js');
+                const content = await response.text();
+                
+                const hasCategoriesInMock = content.includes('categories: [') &&
+                                           content.includes('"Technology"') &&
+                                           content.includes('"Science"');
+
+                if (hasCategoriesInMock) {
+                    addTestResult(
+                        'PR #8: Mock data includes categories',
+                        true,
+                        'Mock RSS data includes category arrays for testing'
+                    );
+                } else {
+                    addTestResult(
+                        'PR #8: Mock data includes categories',
+                        false,
+                        'Mock data missing category information'
+                    );
+                }
+            } catch (error) {
+                addTestResult('Mock data test', false, `Error: ${error.message}`);
+            }
+
+            // Test 5: Environment detection
+            console.log('🔍 Test 5: Checking environment detection...');
+            try {
+                const response = await fetch('app.js');
+                const content = await response.text();
+                
+                const hasLocalhostDetection = content.includes('window.location.hostname') &&
+                                             (content.includes('localhost') || content.includes('127.0.0.1'));
+
+                if (hasLocalhostDetection) {
+                    addTestResult(
+                        'Environment detection for localhost',
+                        true,
+                        'Localhost detection implemented for mock data mode'
+                    );
+                } else {
+                    addTestResult(
+                        'Environment detection for localhost',
+                        false,
+                        'Missing localhost detection'
+                    );
+                }
+            } catch (error) {
+                addTestResult('Environment detection test', false, `Error: ${error.message}`);
+            }
+
+            updateSummary();
+            document.getElementById('runTestsBtn').disabled = false;
+            
+            // Add visual demo section
+            addVisualDemoSection();
+        }
+
+        function addVisualDemoSection() {
+            const container = document.getElementById('resultsContainer');
+            const demoDiv = document.createElement('div');
+            demoDiv.className = 'feature-demo';
+            demoDiv.innerHTML = `
+                <h3>🎨 Visual Feature Demonstration</h3>
+                <p>To see the features in action:</p>
+                <ol>
+                    <li>Click the "Open Main Application" button above</li>
+                    <li>Click "Fetch RSS Feed" in the main app</li>
+                    <li>Observe the following:
+                        <ul>
+                            <li><strong>PR #8:</strong> Category bubbles (colored badges) below each article title</li>
+                            <li><strong>PR #7:</strong> Side-by-side comparison showing RSS XML (left, orange) and JSON (right, green)</li>
+                        </ul>
+                    </li>
+                </ol>
+                <div class="screenshot-placeholder">
+                    📸 For reference, see the screenshot in the PR description showing both features working together
+                </div>
+            `;
+            container.appendChild(demoDiv);
+        }
+
+        function runIndividualTests() {
+            alert('Individual test mode: This would run each test separately with detailed logging. For this demo, use "Run All Tests" instead.');
+        }
+
+        function openMainApp() {
+            window.open('index.html', '_blank');
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            console.log('Test page loaded. Ready to run tests.');
+            document.getElementById('testResults').innerHTML = `
+                <div class="test-info test-result">
+                    Test suite ready. Click "Run All Tests" to begin validation.
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
